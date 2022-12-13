@@ -1,5 +1,7 @@
 package com.searchingsortingbigopartb.prework;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,9 +25,22 @@ public class AmazonOrderService {
      * @param asin - The ASIN being searched for.
      * @return the Amazon Package with the target ASIN
      */
-    public AmazonPackage findPackageLinear(String asin) {
+    public AmazonPackage findPackageLinear(String asin) throws PackageNotFoundException {
         // PARTICIPANTS - Implement a linear search for a package matching the requested ASIN
-        return packages.get(0);
+        AmazonPackage result = null;
+
+        for (AmazonPackage amazonPackage : packages) {
+            if (amazonPackage.getAsin().equalsIgnoreCase(asin)) {
+                result = amazonPackage;
+                break;
+            }
+        }
+
+        if (result == null) {
+            throw new PackageNotFoundException();
+        }
+
+        return result;
     }
 
     /**
@@ -34,8 +49,29 @@ public class AmazonOrderService {
      * @param asin - The ASIN being searched for.
      * @return the Amazon Package with the target ASIN
      */
-    public AmazonPackage findPackageBinary(String asin) {
+    public AmazonPackage findPackageBinary(String asin) throws PackageNotFoundException {
         // PARTICIPANTS - Implement a binary search for a package matching the requested ASIN
-        return packages.get(0);
+        AmazonPackage amazonPackage = null;
+        int left = 0;
+        int right = packages.size()-1;
+
+        while (left <= right) {
+            int middle = left + (right - left) / 2;
+            int result = asin.compareTo(packages.get(middle).getAsin());
+            if (result == 0) {
+                amazonPackage = packages.get(middle);
+            }
+            if (result > 0) {
+                left = middle + 1;
+            } else {
+                right = middle -1;
+            }
+        }
+
+        if (amazonPackage == null) {
+            throw new PackageNotFoundException();
+        }
+
+        return amazonPackage;
     }
 }
