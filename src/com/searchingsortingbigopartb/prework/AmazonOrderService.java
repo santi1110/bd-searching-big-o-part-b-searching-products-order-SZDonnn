@@ -27,20 +27,12 @@ public class AmazonOrderService {
      */
     public AmazonPackage findPackageLinear(String asin) throws PackageNotFoundException {
         // PARTICIPANTS - Implement a linear search for a package matching the requested ASIN
-        AmazonPackage result = null;
-
-        for (AmazonPackage amazonPackage : packages) {
-            if (amazonPackage.getAsin().equalsIgnoreCase(asin)) {
-                result = amazonPackage;
-                break;
+        for (AmazonPackage pkg : packages) {
+            if (pkg.getAsin().equals(asin)) {
+                return pkg;
             }
         }
-
-        if (result == null) {
-            throw new PackageNotFoundException();
-        }
-
-        return result;
+        throw new PackageNotFoundException("Package with ASIN " + asin + " not found.");
     }
 
     /**
@@ -51,27 +43,24 @@ public class AmazonOrderService {
      */
     public AmazonPackage findPackageBinary(String asin) throws PackageNotFoundException {
         // PARTICIPANTS - Implement a binary search for a package matching the requested ASIN
-        AmazonPackage amazonPackage = null;
         int left = 0;
-        int right = packages.size()-1;
+        int right = packages.size() - 1;
 
         while (left <= right) {
-            int middle = left + (right - left) / 2;
-            int result = asin.compareTo(packages.get(middle).getAsin());
-            if (result == 0) {
-                amazonPackage = packages.get(middle);
-            }
-            if (result > 0) {
-                left = middle + 1;
+            int mid = left + (right - left) / 2;
+            AmazonPackage midPackage = packages.get(mid);
+
+            int comparison = midPackage.getAsin().compareTo(asin);
+
+            if (comparison == 0) {
+                return midPackage;
+            } else if (comparison < 0) {
+                left = mid + 1;
             } else {
-                right = middle -1;
+                right = mid - 1;
             }
         }
 
-        if (amazonPackage == null) {
-            throw new PackageNotFoundException();
-        }
-
-        return amazonPackage;
+        throw new PackageNotFoundException("Package with ASIN " + asin + " not found.");
     }
 }
